@@ -6,7 +6,7 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 
-#include "errproc.hpp"
+#include "../include/errproc.hpp"
 
 int main() {
     int server = Socket(AF_INET, SOCK_STREAM, 0);
@@ -28,8 +28,6 @@ int main() {
     }
     write(STDOUT_FILENO, buf, nread);
     write(fd, buf, nread);
-
-    sleep(20);
 
     close(fd);
     close(server);

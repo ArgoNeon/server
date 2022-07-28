@@ -1,0 +1,3 @@
+server.o: source/server.cpp source/../include/errproc.hpp
+client.o: source/client.cpp source/../include/errproc.hpp
+errproc.o: source/errproc.cpp source/../include/errproc.hpp

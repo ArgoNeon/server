@@ -6,7 +6,7 @@
 #include <cstdio>
 #include <unistd.h>
 
-#include "errproc.hpp"
+#include "../include/errproc.hpp"
 
 int main() {
     int fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -26,9 +26,6 @@ int main() {
         printf("EOF occured\n");
     }
     write(STDOUT_FILENO, buf, nread);
-
-    sleep(10);
-
     close(fd);
     return 0;
 }
