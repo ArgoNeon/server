@@ -5,7 +5,7 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 
-#include "../include/errproc.hpp"
+#include "../include/mysocket.hpp"
 
 int Socket(int domain, int type, int protocol) {
     int res = socket(domain, type, protocol);
