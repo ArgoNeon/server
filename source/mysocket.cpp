@@ -4,6 +4,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <arpa/inet.h>
+#include <netdb.h>
 
 #include "../include/mysocket.hpp"
 
@@ -53,10 +54,37 @@ void Inet_pton(int af, const char *src, void *dst) {
     int res = inet_pton(af, src, dst);
     if (res == 0) {
         printf("inet_pton failed: src does not contain a character string representing a valid network  address  in the  specified  address  family\n");
-    exit(EXIT_FAILURE);
+        exit(EXIT_FAILURE);
     }
     if (res == -1) {
         perror("inet_pton failed");
         exit(EXIT_FAILURE);
     }
+}
+
+void GetHostName(char *hostname, size_t len) {
+    int name = gethostname(hostname, len);
+    if (name == -1) {
+        perror("gethostname failed");
+        exit(EXIT_FAILURE);
+    }
+}
+
+struct hostent *GetHostInfo(char *hostname) {
+    struct hostent *host_info;
+    host_info = gethostbyname(hostname);
+    if (host_info == NULL) {
+        perror("gethostbyname failed");
+        exit(EXIT_FAILURE);
+    }
+    return host_info;    
+}
+
+const char *Inet_ntop(int af, const void *src, char *dst, size_t cnt) {
+    const char *res = inet_ntop(af, src, dst, cnt);
+    if (res == NULL) {
+        perror("inet_ntop failed");
+        exit(EXIT_FAILURE);
+    }
+    return res;
 }
