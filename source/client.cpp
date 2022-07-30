@@ -16,11 +16,11 @@ int main() {
     struct sockaddr_in adr = {0};
     adr.sin_family = AF_INET;
     adr.sin_port = htons(PORT);
-    Inet_pton(AF_INET, "127.0.0.1", &adr.sin_addr);
+    Inet_pton(AF_INET, "192.168.31.112", &adr.sin_addr);
     Connect(fd, (struct sockaddr *) &adr, sizeof adr);
 
     char buf[BUF];
-    int file = OpenRead("data_client/client.jpg");
+    int file = OpenRead("data_client/miku.png");
     ReadFromFileToFd(fd, file, buf, BUF);
 
     close(file);

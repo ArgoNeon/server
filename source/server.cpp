@@ -22,7 +22,7 @@ int main() {
     int fd = Accept(server, (struct sockaddr *) &adr, &adrlen);
 
     char buf[BUF];
-    int file = OpenWrite("data_server/server.jpg");
+    int file = OpenWrite("data_server/server.png");
     ReadFromFdToFile(fd, file, buf, BUF);
 
     close(file);
