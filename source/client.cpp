@@ -1,3 +1,4 @@
+#include <iostream>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
@@ -10,6 +11,8 @@
 
 #include "../include/mysocket.hpp"
 #include "../include/files.hpp"
+#include "../include/checker.hpp"
+#include "../include/searchip.hpp"
 
 int main() {
     int status;
@@ -39,9 +42,20 @@ int main() {
     server_addr.sin_port = htons(PORT);
     client_addr.sin_family = AF_INET;
     client_addr.sin_port = htons(PORT);
+    
+    char IP[INET_ADDRSTRLEN];
+    int server_ip;
+    int connect = -1;
 
-    Inet_pton(AF_INET, "192.168.31.112", &server_addr.sin_addr);
-    Connect(fd, (struct sockaddr *) &server_addr, sizeof server_addr);
+    while (connect != 0) {
+        write(1, "Input server ip: ", 17);
+        server_ip = ReadServerIP(IP);
+        CheckServerIP(server_ip);
+        if (server_ip == -1)
+            continue;
+        Inet_pton(AF_INET, IP, &server_addr.sin_addr);
+        connect = Connect(fd, (struct sockaddr *) &server_addr, sizeof server_addr);
+    }
     //192.168.31.112
    
     char buf[BUF];

@@ -42,23 +42,24 @@ int Accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen) {
     return res;    
 }
 
-void Connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen) {
+int Connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen) {
     int res = connect(sockfd, addr, addrlen);
     if (res == -1) {
         perror("connect failed");
-        exit(EXIT_FAILURE);
+        return -1;
     }
+    return 0;
 }
 
 void Inet_pton(int af, const char *src, void *dst) {
     int res = inet_pton(af, src, dst);
     if (res == 0) {
         printf("inet_pton failed: src does not contain a character string representing a valid network  address  in the  specified  address  family\n");
-        exit(EXIT_FAILURE);
+        return;
     }
     if (res == -1) {
         perror("inet_pton failed");
-        exit(EXIT_FAILURE);
+        return;
     }
 }
 
@@ -89,103 +90,3 @@ const char *Inet_ntop(int af, const void *src, char *dst, size_t cnt) {
     return res;
 }
 
-void SearchInet(int fd) {    
-    char IP[INET_ADDRSTRLEN + 4];
-    char NET[INET_ADDRSTRLEN];
-    char next[CHAR_SIZE] = "\n";
-    char buf[BUF1_SIZE] = "";
-    char colon[COLON_SIZE] = ": ";
-    char inet[INET_SIZE] = "inet ";
-    int i = 0;
-    int ip;
-    int net;
-
-    ssize_t nread;
-    while((nread = read(fd, buf, BUF1_SIZE)) > 0) {
-        if (nread == -1) {
-            perror("read failed");
-            exit(EXIT_FAILURE);
-        }
-        if (inet[i] == buf[0]) {
-            i++;
-            if (i == INET_SIZE - 1) {
-                ip = ReadIP(fd, IP);
-                write(1, IP, ip);
-                write(1, next, CHAR_SIZE);
-                i = 0;
-            }
-        } else {
-            if (colon[i] == buf[0]) {
-                i++;
-                if (i == COLON_SIZE - 1) {
-                    net = ReadNet(fd, NET);
-                    write(1, NET, net);
-                    write(1, colon, COLON_SIZE);
-                    i = 0;
-                }
-            } else {
-                i = 0;
-            }
-        }
-    }
-}
-
-int ReadIP(int fd, char *IP) {
-    char space[CHAR_SIZE] = " ";
-    char buf[BUF1_SIZE] = "";
-    ssize_t nread;
-    int i = 0;
-
-    while((nread = read(fd, buf, BUF1_SIZE)) > 0) {
-       if (nread == -1) {
-            perror("read failed");
-            exit(EXIT_FAILURE);
-        }
-       if (buf[0] == space[0]) {
-            IP[i] = '\0';
-            i++;
-            break;
-       }
-       IP[i] = buf[0];
-       i++;
-    }
-    return i;
-}
-
-int ReadNet(int fd, char *NET) {
-    const int buf_size = 1;
-    const int colon_size = 2;
-    char colon[COLON_SIZE] = ":";
-    char buf[BUF1_SIZE] = "";
-    ssize_t nread;
-    int i = 0;
-
-    while((nread = read(fd, buf, buf_size)) > 0) {
-       if (nread == -1) {
-            perror("read failed");
-            exit(EXIT_FAILURE);
-        }
-       if (buf[0] == colon[0]) {
-            NET[i] = '\0';
-            i++;
-            break;
-       }
-       NET[i] = buf[0];
-       i++;
-    }
-    return i;
-}
-
-void CheckPipe(int check_pipe) {
-    if (check_pipe == -1) {
-        perror("pipe failed");
-        exit(EXIT_FAILURE);
-    }
-}
-
-void CheckPid(pid_t pid) {
-    if (pid == -1) {
-        perror("pid failed");
-        exit(EXIT_FAILURE);
-    } 
-}

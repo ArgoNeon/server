@@ -5,6 +5,8 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
+void ClearString(int fd);
+
 ssize_t Read(int fd, char *buf, ssize_t count);
 
 ssize_t Write(int fd, char *buf, ssize_t count); 
