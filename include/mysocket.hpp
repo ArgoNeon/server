@@ -3,9 +3,14 @@
 
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <unistd.h>
 
 #define BUF 65536
 #define PORT 8080
+#define BUF1_SIZE 1
+#define CHAR_SIZE 2
+#define INET_SIZE 6
+#define COLON_SIZE 3
 
 int Socket(int domain, int type, int protocol);
 
@@ -24,5 +29,15 @@ void GetHostName(char *hostname, size_t len);
 struct hostent *GetHostInfo(char *hostname);
 
 const char *Inet_ntop(int af, const void *src, char *dst, size_t cnt);
+
+int ReadIP(int fd, char *IP);
+
+int ReadNet(int fd, char *NET);
+
+void SearchInet(int fd);
+
+void CheckPipe(int check_pipe);
+
+void CheckPid(pid_t pid);
 
 #endif  //MYSOCKET_HPP

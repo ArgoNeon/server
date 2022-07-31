@@ -5,6 +5,10 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
+ssize_t Read(int fd, char *buf, ssize_t count);
+
+ssize_t Write(int fd, char *buf, ssize_t count); 
+
 int OpenRead(const char *pathname);
 
 int OpenWrite(const char *pathname);

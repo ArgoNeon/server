@@ -7,6 +7,28 @@
 
 #include "../include/files.hpp"
 
+ssize_t Read(int fd, char *buf, ssize_t count) {
+    ssize_t nread;
+    while((nread = read(fd, buf, count)) > 0) {
+        if (nread == -1) {
+            perror("read failed");
+            exit(EXIT_FAILURE);
+        }
+    }
+    return nread;
+}
+
+ssize_t Write(int fd, char *buf, ssize_t count) {
+    ssize_t nwrite;
+    while((nwrite = write(fd, buf, count)) > 0) {
+        if (nwrite == -1) {
+            perror("write failed");
+            exit(EXIT_FAILURE);
+        }
+    }
+    return nwrite;
+}
+
 int OpenRead(const char *pathname) {
     int file = open(pathname, O_RDONLY);
     if (file == -1) {
