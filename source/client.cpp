@@ -23,6 +23,14 @@ struct client {
     int fd;
 };
 
+int CommandAnalyseClient(char *str, ssize_t str_size) {
+    char exit_arr[5] = "exit";
+    if (strncmp(str, exit_arr, 4) == 0) {
+        return 1;  
+    }
+    return 0; 
+}
+
 int main() {
     int status;
     int shell_fd[2];
@@ -52,11 +60,12 @@ int main() {
     clnt.addr.sin_port = htons(PORT);
 
     EstablishConnect(clnt.fd, &clnt.addr);
+    int exit_check = 0;
 
-    while(!true) {
+    while(!exit_check) {
         i = clnt.com % 256;
         clnt.orders_size[i] = ReadString(clnt.fd, clnt.orders[i], 256);
-        //CommandAnalyse(clnt.orders[i]);
+        exit_check = CommandAnalyseClient(clnt.orders[i], clnt.orders_size[i]);
         WriteString(clnt.orders[i], clnt.orders_size[i]);
         clnt.com++;
     }

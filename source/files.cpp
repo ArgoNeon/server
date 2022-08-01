@@ -17,10 +17,10 @@ void ClearString(int fd) {
 }
 
 int ReadString(int fd, char *str, ssize_t str_size) {
-    char buf[1] = "";
+    char buf[1];
     ssize_t nread;
     int i = 0;
-    while(buf[0] != '\n') {
+    while(1) { 
         nread = read(fd, buf, 1);
         if (nread == -1) {
             perror("read failed");
@@ -32,11 +32,15 @@ int ReadString(int fd, char *str, ssize_t str_size) {
             ClearString(fd);
             return i;
         }
+
+        if (buf[0] == '\n' || buf[0] == '\0'){
+            str[i] = '\0';
+            i++;
+            return i;
+        }
         str[i] = buf[0];
         i++;
     }
-    str[i] = '\0';
-    i++;
     return i;
 }
 
@@ -46,6 +50,7 @@ int WriteString(char *str, ssize_t str_size) {
         perror("write failed");
         return -1;
     }
+    write(1, "\n", 1);
     return nwrite;
 }
 

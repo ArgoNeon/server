@@ -7,16 +7,25 @@
 #include <unistd.h>
 #include <netdb.h>
 #include <sys/wait.h>
+#include <cstring>
 
 #include "../include/mysocket.hpp"
 #include "../include/files.hpp"
 
 struct server {
-    int fd[32];
-    struct sockaddr_in adr[32];
-    struct sockaddr_in server_adr;
-
+    char command[256][256];
+    int command_size[256];
 };
+
+int CommandAnalyseServer(char *str, ssize_t str_size){
+    char exit_arr[5] = "exit";
+
+    if (strncmp(str, exit_arr, 4) == 0) {
+        return 1;
+    }
+
+    return 0;
+}
 
 //sudo arp-scan --interface=wlp0s20f3 --localnet
 int main() {
@@ -60,14 +69,16 @@ int main() {
 */
     int fd = Accept(server, (struct sockaddr *) &adr, &adrlen);
     Inet_ntop(AF_INET, &adr.sin_addr, IP, INET_ADDRSTRLEN);
-    printf("Accept: %s", IP);
 
     int com;
+    int exit_check = 0;
     char command[256];
 
-    while(!true) {
+    while(!exit_check) {
         write(1, "Input command: ", 16);
         com = ReadString(0, command, 256);
+        //printf("%s %d\n", command, com);
+        exit_check = CommandAnalyseServer(command, com);
         SendString(fd, command, com);
     }
 

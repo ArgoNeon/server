@@ -62,7 +62,7 @@ int Accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen) {
     int res = accept(sockfd, addr, addrlen);
     if (res == -1) {
         perror("accept failed");
-        exit(EXIT_FAILURE);
+        return -1;
     }
     return res;    
 }
@@ -93,7 +93,7 @@ void GetHostName(char *hostname, size_t len) {
     int name = gethostname(hostname, len);
     if (name == -1) {
         perror("gethostname failed");
-        exit(EXIT_FAILURE);
+        return;
     }
 }
 
@@ -102,7 +102,7 @@ struct hostent *GetHostInfo(char *hostname) {
     host_info = gethostbyname(hostname);
     if (host_info == NULL) {
         perror("gethostbyname failed");
-        exit(EXIT_FAILURE);
+        return NULL;
     }
     return host_info;    
 }
@@ -111,7 +111,7 @@ const char *Inet_ntop(int af, const void *src, char *dst, size_t cnt) {
     const char *res = inet_ntop(af, src, dst, cnt);
     if (res == NULL) {
         perror("inet_ntop failed");
-        exit(EXIT_FAILURE);
+        return NULL;
     }
     return res;
 }
