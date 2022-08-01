@@ -11,8 +11,16 @@
 #include "../include/mysocket.hpp"
 #include "../include/files.hpp"
 
+struct server {
+    int fd[32];
+    struct sockaddr_in adr[32];
+    struct sockaddr_in server_adr;
+
+};
+
 //sudo arp-scan --interface=wlp0s20f3 --localnet
 int main() {
+    char IP[INET_ADDRSTRLEN];
     char buf[BUF];
     int status;
     int shell_fd[2];
@@ -41,7 +49,27 @@ int main() {
     Bind(server, (struct sockaddr *) &adr, sizeof adr);
     Listen(server, 5);
     socklen_t adrlen = sizeof adr;
+
+  /*  check_pipe = pipe(shell_fd);
+    CheckPipe(check_pipe);
+    pid = fork();
+    CheckPid;
+    
+    if (pid == 0)
+
+*/
     int fd = Accept(server, (struct sockaddr *) &adr, &adrlen);
+    Inet_ntop(AF_INET, &adr.sin_addr, IP, INET_ADDRSTRLEN);
+    printf("Accept: %s", IP);
+
+    int com;
+    char command[256];
+
+    while(!true) {
+        write(1, "Input command: ", 16);
+        com = ReadString(0, command, 256);
+        SendString(fd, command, com);
+    }
 
     int file = OpenWrite("data_server/server.jpg");
     ReadFromFdToFile(fd, file, buf, BUF);

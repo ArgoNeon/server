@@ -7,9 +7,11 @@
 
 void ClearString(int fd);
 
-ssize_t Read(int fd, char *buf, ssize_t count);
+int ReadString(int fd, char *str, ssize_t str_size);
 
-ssize_t Write(int fd, char *buf, ssize_t count); 
+int WriteString(char *str, ssize_t str_size); 
+
+int SendString(int fd, char *str, ssize_t str_size);
 
 int OpenRead(const char *pathname);
 

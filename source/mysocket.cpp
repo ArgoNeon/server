@@ -5,8 +5,33 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <netdb.h>
+#include <cstring>
 
 #include "../include/mysocket.hpp"
+#include "../include/searchip.hpp"
+#include "../include/checker.hpp"
+
+void EstablishConnect(int fd, struct sockaddr_in *server_addr) {
+    char IP[INET_ADDRSTRLEN];
+    char exit_arr[5] = "exit";
+    int server_ip;
+    int connect = -1;
+    int pton = -1;
+
+    while (connect != 0) {
+        write(1, "Input server ip: ", 17);
+        server_ip = ReadServerIP(IP);
+        CheckServerIP(server_ip);
+        if (server_ip == -1)
+            continue;
+        if(strncmp(IP, exit_arr, 4) == 0)
+                return;
+        pton = Inet_pton(AF_INET, IP, &server_addr->sin_addr);
+        if(pton == -1) 
+            continue;
+        connect = Connect(fd, (struct sockaddr *) server_addr, sizeof (*server_addr));
+    }
+}
 
 int Socket(int domain, int type, int protocol) {
     int res = socket(domain, type, protocol);
@@ -51,16 +76,17 @@ int Connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen) {
     return 0;
 }
 
-void Inet_pton(int af, const char *src, void *dst) {
+int Inet_pton(int af, const char *src, void *dst) {
     int res = inet_pton(af, src, dst);
     if (res == 0) {
         printf("inet_pton failed: src does not contain a character string representing a valid network  address  in the  specified  address  family\n");
-        return;
+        return -1;
     }
     if (res == -1) {
         perror("inet_pton failed");
-        return;
+        return -1;
     }
+    return 0;
 }
 
 void GetHostName(char *hostname, size_t len) {

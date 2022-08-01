@@ -9,29 +9,51 @@
 #include "../include/files.hpp"
 
 void ClearString(int fd) {
-    char buf[1];
+    char buf[1] = "";
     ssize_t nread;
     while(buf[0] != '\n') {
         nread = read(fd, buf, 1);
     }
 }
 
-ssize_t Read(int fd, char *buf, ssize_t count) {
+int ReadString(int fd, char *str, ssize_t str_size) {
+    char buf[1] = "";
     ssize_t nread;
-    while((nread = read(fd, buf, count)) > 0) {
+    int i = 0;
+    while(buf[0] != '\n') {
+        nread = read(fd, buf, 1);
         if (nread == -1) {
             perror("read failed");
+            return -1;
         }
+       
+        if (i == str_size - 1) {
+            str[i] = '\0';
+            ClearString(fd);
+            return i;
+        }
+        str[i] = buf[0];
+        i++;
     }
-    return nread;
+    str[i] = '\0';
+    i++;
+    return i;
 }
 
-ssize_t Write(int fd, char *buf, ssize_t count) {
-    ssize_t nwrite;
-    while((nwrite = write(fd, buf, count)) > 0) {
-        if (nwrite == -1) {
-            perror("write failed");
-        }
+int WriteString(char *str, ssize_t str_size) {
+    ssize_t nwrite = write(1, str, str_size);
+    if (nwrite == -1) {
+        perror("write failed");
+        return -1;
+    }
+    return nwrite;
+}
+
+int SendString(int fd, char *str, ssize_t str_size) {
+    ssize_t nwrite = write(fd, str, str_size);
+    if (nwrite == -1) {
+        perror("write failed");
+        return -1;
     }
     return nwrite;
 }
@@ -55,37 +77,35 @@ int OpenWrite(const char *pathname) {
 }
 
 void ReadFromFdToFile(int fd, int file, char *buf, size_t buf_size) {
-    size_t nread = read(fd, buf, buf_size);
-    
-    if (nread == -1) {
-        perror("Read from fd to file failed");
-        errno;
-    }
-
+    size_t nread = 1;
+    ssize_t nwrite;
     while(nread > 0) {
-        write(file, buf, nread);
         nread = read(fd, buf, buf_size);
         if (nread == -1) {
-            perror("Read from fd to file failed");
-            errno;
+            perror("Read from fd failed");
+            return;
+        }
+        nwrite = write(file, buf, nread);
+        if (nwrite == -1) {
+            perror("Write to file failed");
+            return;
         }
     }
 }
 
 void ReadFromFileToFd(int fd, int file, char *buf, size_t buf_size) {
-    size_t nread = read(file, buf, buf_size);
-
-    if (nread == -1) {
-        perror("Read from file to fd failed");
-        errno;
-    }
-
-    while (nread > 0) {
-        write(fd, buf, nread);
+    size_t nread = 1;
+    ssize_t nwrite;
+    while(nread > 0) {
         nread = read(file, buf, buf_size);
         if (nread == -1) {
-            perror("Read from file to fd failed");
-            errno;
+            perror("Read from fd failed");
+            return;
         }
-     }
+        nwrite = write(fd, buf, nread);
+        if (nwrite == -1) {
+            perror("Write to file failed");
+            return;
+        }
+    }
 }

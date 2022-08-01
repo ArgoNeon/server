@@ -12,6 +12,8 @@
 #define INET_SIZE 6
 #define COLON_SIZE 3
 
+void EstablishConnect(int fd, struct sockaddr_in *server_addr);
+
 int Socket(int domain, int type, int protocol);
 
 void Bind(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
@@ -22,7 +24,7 @@ int Accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen);
 
 int Connect(int socket, const struct sockaddr *addr, socklen_t addrlen);
 
-void Inet_pton(int af, const char *src, void *dst);
+int Inet_pton(int af, const char *src, void *dst);
 
 void GetHostName(char *hostname, size_t len);
 

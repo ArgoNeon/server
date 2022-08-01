@@ -7,12 +7,21 @@
 #include <cstdio>
 #include <unistd.h>
 #include <netdb.h>
+#include <cstring>
 #include <sys/wait.h>
 
 #include "../include/mysocket.hpp"
 #include "../include/files.hpp"
 #include "../include/checker.hpp"
 #include "../include/searchip.hpp"
+
+struct client {
+    char orders[256][256];
+    int orders_size[256];
+    struct sockaddr_in addr = {0};
+    long long com = 0;
+    int fd;
+};
 
 int main() {
     int status;
@@ -34,35 +43,29 @@ int main() {
         wait(&status);
     }
 
-    int fd = socket(AF_INET, SOCK_STREAM, 0);
-    struct sockaddr_in server_addr = {0};
-    struct sockaddr_in client_addr = {0}; 
+    struct client clnt;
+    int i;
 
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_port = htons(PORT);
-    client_addr.sin_family = AF_INET;
-    client_addr.sin_port = htons(PORT);
-    
-    char IP[INET_ADDRSTRLEN];
-    int server_ip;
-    int connect = -1;
+    clnt.fd = socket(AF_INET, SOCK_STREAM, 0);
 
-    while (connect != 0) {
-        write(1, "Input server ip: ", 17);
-        server_ip = ReadServerIP(IP);
-        CheckServerIP(server_ip);
-        if (server_ip == -1)
-            continue;
-        Inet_pton(AF_INET, IP, &server_addr.sin_addr);
-        connect = Connect(fd, (struct sockaddr *) &server_addr, sizeof server_addr);
+    clnt.addr.sin_family = AF_INET;
+    clnt.addr.sin_port = htons(PORT);
+
+    EstablishConnect(clnt.fd, &clnt.addr);
+
+    while(!true) {
+        i = clnt.com % 256;
+        clnt.orders_size[i] = ReadString(clnt.fd, clnt.orders[i], 256);
+        //CommandAnalyse(clnt.orders[i]);
+        WriteString(clnt.orders[i], clnt.orders_size[i]);
+        clnt.com++;
     }
-    //192.168.31.112
    
     char buf[BUF];
     int file = OpenRead("data_client/client.jpg");
-    ReadFromFileToFd(fd, file, buf, BUF);
+    ReadFromFileToFd(clnt.fd, file, buf, BUF);
 
     close(file);
-    close(fd);
+    close(clnt.fd);
     return 0;
 }
